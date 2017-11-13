@@ -22,7 +22,8 @@ class Filters(object):
 	greps = {
 		"cert": " | grep 'Certificate:'",
 		"sni": " | grep 'Server Name:'",
-		"http": " | grep 'Host\|Referer\|X-Requested-With'",
+		"http": " | grep 'Host\|Referer\|X-Requested-With\|URI Path\|URI Query'",
+		# "http": " | grep 'Host\|Referer\|X-Requested-With'",
 	}
 
 class Settings(object):
@@ -78,7 +79,7 @@ class Shark(object):
         # http_data = set([x.split(' ')[-1].replace("\\r\\n", "") for x in http_data if x])
         http_data = [x.split(' ')[-2:] for x in http_data if x]
         # print(http_data)
-        http_data = set([x for x in zip([x[0] for x in http_data], [x[1].replace('\\r\\n', "") for x in http_data])]) # why doesn't strip/rstrip work?
+        http_data = sorted(set([x for x in zip([x[0] for x in http_data], [x[1].replace('\\r\\n', "") for x in http_data])])) # why doesn't strip/rstrip work?
         for x in http_data:
         	print(x[0], x[1])
 
