@@ -7,11 +7,6 @@ from multiprocessing import Process, Lock
 from colorama import init, Fore, Back, Style
 init(autoreset=True)
 
-try:
-    import colorama
-except:
-    print("Missing one of the packages, please see requirements.txt")
-
 class Generators(object):
     mapping = {
         "cert": "ssl.handshake.certificate",
