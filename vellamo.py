@@ -33,7 +33,9 @@ class Settings(object):
 
 class Shark(object):
     ''' Class used to extract data from pcap files. '''
+
     tshark_filter_root = ['tshark', '-V', '-r', '', '-Y', '']
+
     def __init__(self, profile, filename):
         self.profile = profile
         self.filename = filename
@@ -78,9 +80,7 @@ class Shark(object):
         http_data = subprocess.Popen(http_cmd, shell=True,
             stdout=subprocess.PIPE).stdout.read()
         http_data = http_data.decode("utf-8").split('\n')
-        # http_data = set([x.split(' ')[-1].replace("\\r\\n", "") for x in http_data if x])
         http_data = [x.split(' ')[-2:] for x in http_data if x]
-        # print(http_data)
         http_data = sorted(set([x for x in zip([x[0] for x in http_data], [x[1].replace('\\r\\n', "") for x in http_data])])) # why doesn't strip/rstrip work?
         print(Fore.GREEN + Style.BRIGHT + "\n---[ HTTP fields ]---")
         iolock.acquire()
@@ -89,6 +89,9 @@ class Shark(object):
         iolock.release()
 
     def fetch(self):
+        '''
+        Send some sharks to bring something useful.
+        '''
         ioclock = Lock()
         cert_p = Process(target=self.fetch_cert, args=(ioclock,))
         sni_p = Process(target=self.fetch_sni, args=(ioclock,))
