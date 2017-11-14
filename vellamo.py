@@ -90,7 +90,7 @@ class Shark(object):
 
     def fetch(self):
         '''
-        Send some sharks to bring something useful.
+        Send the shark to bring something useful.
         '''
         ioclock = Lock()
         cert_p = Process(target=self.fetch_cert, args=(ioclock,))
@@ -107,7 +107,7 @@ class Shark(object):
 
 def main():
     if len(sys.argv) != 2:
-        print("Use: agwe.py <pcap_file_name>")
+        print("Use: vellamo.py <pcap_file_name>")
         sys.exit(1)
     shark = Shark(Settings.ATIP, sys.argv[1])
     shark.fetch()
