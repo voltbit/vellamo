@@ -47,7 +47,7 @@ class Shark(object):
         cert_data = set([x.group(1).split(',')[0] for x in cert_data if x])
         cert_data = [x for x in cert_data if not ' ' in x]
         iolock.acquire()
-        print(Fore.GREEN + Style.BRIGHT + "\n---[ SSL cert Id at common name ]---")
+        print(Fore.GREEN + Style.BRIGHT + "\n---[ Cert Id at common name ]---")
         for x in cert_data:
             print(x)
         iolock.release()
@@ -62,7 +62,7 @@ class Shark(object):
         sni_data = sni_data.decode("utf-8").split('\n')
         sni_data = set([x.split(' ')[-1] for x in sni_data if x])
         iolock.acquire()
-        print(Fore.GREEN + Style.BRIGHT + "\n---[ Server name indication ]---")
+        print(Fore.GREEN + Style.BRIGHT + "\n---[ SNI - Server name indication ]---")
         for x in sni_data:
             print(x)
         iolock.release()
