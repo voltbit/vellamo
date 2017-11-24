@@ -16,7 +16,7 @@ class Generators(object):
 
 class Filters(object):
 	greps = {
-		"cert": " | grep 'Certificate:'",
+                "cert": " | grep 'Certificate:\|Certificate '",
 		"sni": " | grep 'Server Name:'",
 		"http": " | grep 'Host\|Referer\|X-Requested-With\|URI Path\|URI Query'",
 		# "http": " | grep 'Host\|Referer\|X-Requested-With'",
