@@ -48,7 +48,7 @@ class Shark(object):
         cert_data = [x for x in cert_data if not ' ' in x]
         iolock.acquire()
         print(Fore.GREEN + Style.BRIGHT + "\n---[ Cert Id at common name ]---")
-        for x in cert_data:
+        for x in sorted(cert_data):
             print(x)
         iolock.release()
 
@@ -63,7 +63,7 @@ class Shark(object):
         sni_data = set([x.split(' ')[-1] for x in sni_data if x])
         iolock.acquire()
         print(Fore.GREEN + Style.BRIGHT + "\n---[ SNI - Server name indication ]---")
-        for x in sni_data:
+        for x in sorted(sni_data):
             print(x)
         iolock.release()
 
@@ -79,7 +79,7 @@ class Shark(object):
         http_data = sorted(set([x for x in zip([x[0] for x in http_data], [x[1].replace('\\r\\n', "") for x in http_data])])) # why doesn't strip/rstrip work?
         print(Fore.GREEN + Style.BRIGHT + "\n---[ HTTP fields ]---")
         iolock.acquire()
-        for x in http_data:
+        for x in sorted(http_data):
             print(x[0], x[1])
         iolock.release()
 
