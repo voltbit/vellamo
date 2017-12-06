@@ -48,8 +48,8 @@ class Shark(object):
         cert_data = [x for x in cert_data if not ' ' in x]
         iolock.acquire()
         print(Fore.GREEN + Style.BRIGHT + "\n---[ Cert Id at common name ]---")
-        for x in sorted(cert_data):
-            print(x)
+        for x in sorted([x[::-1] for x in cert_data]):
+            print(x[::-1])
         iolock.release()
 
     def fetch_sni(self, iolock):
@@ -63,8 +63,8 @@ class Shark(object):
         sni_data = set([x.split(' ')[-1] for x in sni_data if x])
         iolock.acquire()
         print(Fore.GREEN + Style.BRIGHT + "\n---[ SNI - Server name indication ]---")
-        for x in sorted(sni_data):
-            print(x)
+        for x in sorted([x[::-1] for x in sni_data]):
+            print(x[::-1])
         iolock.release()
 
     def fetch_http(self, iolock):
