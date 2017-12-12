@@ -48,15 +48,16 @@ class Shark(object):
         cert_data = [re.search('id-at-commonName=(.*)', x) for x in cert_data]
         cert_data = set([x.group(1).split(',')[0] for x in cert_data if x])
         cert_data = [x for x in cert_data if not ' ' in x]
+        cert_data = [x[::-1] for x in sorted([x[::-1] for x in cert_data])]
         iolock.acquire()
-        print(Fore.GREEN + Style.BRIGHT + "\n---[ Cert Id at common name ]---")
+        print(Fore.GREEN + Style.BRIGHT + "\n---[ Cert id at CN (common name) ]---")
         if self.keywords:
-            for x in sorted([x[::-1] for x in cert_data]):
-                if any(keyword in x[::-1] for keyword in self.keywords):
-                    print(x[::-1])
+            for x in cert_data:
+                if any(keyword in x for keyword in self.keywords):
+                    print(x)
         else:
-            for x in sorted([x[::-1] for x in cert_data]):
-                print(x[::-1])
+            for x in cert_data:
+                print(x)
         iolock.release()
 
     def fetch_sni(self, iolock):
@@ -68,15 +69,17 @@ class Shark(object):
             stdout=subprocess.PIPE).stdout.read()
         sni_data = sni_data.decode("utf-8").split('\n')
         sni_data = set([x.split(' ')[-1] for x in sni_data if x])
+        sni_data = [x for x in sni_data if not ' ' in x]
+        sni_data = [x[::-1] for x in sorted([x[::-1] for x in sni_data])]
         iolock.acquire()
         print(Fore.GREEN + Style.BRIGHT + "\n---[ SNI - Server name indication ]---")
         if self.keywords:
-            for x in sorted([x[::-1] for x in sni_data]):
-                if any(keyword in x[::-1] for keyword in self.keywords):
-                    print(x[::-1])
+            for x in sni_data:
+                if any(keyword in x for keyword in self.keywords):
+                    print(x)
         else:
-            for x in sorted([x[::-1] for x in sni_data]):
-                print(x[::-1])
+            for x in sni_data:
+                print(x)
         iolock.release()
 
     def fetch_http(self, iolock):
