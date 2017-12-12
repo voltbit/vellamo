@@ -3,6 +3,7 @@ from __future__ import print_function
 import sys
 import subprocess
 import re
+import argparse
 from multiprocessing import Process, Lock
 from colorama import init, Fore, Back, Style
 init(autoreset=True)
@@ -16,7 +17,7 @@ class Generators(object):
 
 class Filters(object):
 	greps = {
-                "cert": " | grep 'Certificate:\|Certificate '",
+        "cert": " | grep 'Certificate:\|Certificate '",
 		"sni": " | grep 'Server Name:'",
 		"http": " | grep 'Host\|Referer\|X-Requested-With\|URI Path\|URI Query'",
 		# "http": " | grep 'Host\|Referer\|X-Requested-With'",
@@ -31,9 +32,10 @@ class Shark(object):
 
     tshark_filter_root = ['tshark', '-V', '-r', '', '-Y', '']
 
-    def __init__(self, profile, filename):
+    def __init__(self, profile, filename, keywords):
         self.profile = profile
         self.filename = filename
+        self.keywords = keywords
 
     def fetch_cert(self, iolock):
         cert_cmd = self.tshark_filter_root
@@ -48,8 +50,13 @@ class Shark(object):
         cert_data = [x for x in cert_data if not ' ' in x]
         iolock.acquire()
         print(Fore.GREEN + Style.BRIGHT + "\n---[ Cert Id at common name ]---")
-        for x in sorted([x[::-1] for x in cert_data]):
-            print(x[::-1])
+        if self.keywords:
+            for x in sorted([x[::-1] for x in cert_data]):
+                if any(keyword in x[::-1] for keyword in self.keywords):
+                    print(x[::-1])
+        else:
+            for x in sorted([x[::-1] for x in cert_data]):
+                print(x[::-1])
         iolock.release()
 
     def fetch_sni(self, iolock):
@@ -63,8 +70,13 @@ class Shark(object):
         sni_data = set([x.split(' ')[-1] for x in sni_data if x])
         iolock.acquire()
         print(Fore.GREEN + Style.BRIGHT + "\n---[ SNI - Server name indication ]---")
-        for x in sorted([x[::-1] for x in sni_data]):
-            print(x[::-1])
+        if self.keywords:
+            for x in sorted([x[::-1] for x in sni_data]):
+                if any(keyword in x[::-1] for keyword in self.keywords):
+                    print(x[::-1])
+        else:
+            for x in sorted([x[::-1] for x in sni_data]):
+                print(x[::-1])
         iolock.release()
 
     def fetch_http(self, iolock):
@@ -79,8 +91,13 @@ class Shark(object):
         http_data = sorted(set([x for x in zip([x[0] for x in http_data], [x[1].replace('\\r\\n', "") for x in http_data])])) # why doesn't strip/rstrip work?
         print(Fore.GREEN + Style.BRIGHT + "\n---[ HTTP fields ]---")
         iolock.acquire()
-        for x in sorted(http_data):
-            print(x[0], x[1])
+        if self.keywords:
+            for x in sorted(http_data):
+                if any(keyword in x[1] for keyword in self.keywords):
+                    print(x[0], x[1])
+        else:
+            for x in sorted(http_data):
+                print(x[0], x[1])
         iolock.release()
 
     def fetch(self):
@@ -101,10 +118,16 @@ class Shark(object):
         http_p.join()
 
 def main():
-    if len(sys.argv) != 2:
-        print("Use: vellamo.py <pcap_file_name>")
-        sys.exit(1)
-    shark = Shark(Settings.ATIP, sys.argv[1])
+    parser = argparse.ArgumentParser()
+    parser.add_argument('filename', type=str, help="name of target pcap file")
+    parser.add_argument('-k', '--keywords',  nargs='+', type=str, default=None,
+        help="specify one or more keywords - only entries containg the keywords will be displayed")
+    args = parser.parse_args()
+
+    # if len(sys.argv) != 2:
+    #     print("Use: vellamo.py <pcap_file_name>")
+    #     sys.exit(1)
+    shark = Shark(Settings.ATIP, args.filename, args.keywords)
     shark.fetch()
 
 if __name__ == "__main__":
