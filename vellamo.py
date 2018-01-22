@@ -16,12 +16,12 @@ class Generators(object):
     }
 
 class Filters(object):
-	greps = {
+    greps = {
         "cert": " | grep 'Certificate:\|Certificate '",
-		"sni": " | grep 'Server Name:'",
-		"http": " | grep 'Host\|Referer\|X-Requested-With\|URI Path\|URI Query'",
-		# "http": " | grep 'Host\|Referer\|X-Requested-With'",
-	}
+        "sni": " | grep 'Server Name:'",
+        "http": " | grep 'Host\|Referer\|X-Requested-With\|URI Path\|URI Query'",
+        # "http": " | grep 'Host\|Referer\|X-Requested-With'",
+    }
 
 class Settings(object):
     ''' Class that defines profiles (what the shark should fetch for you). '''
@@ -43,7 +43,7 @@ class Shark(object):
         cert_cmd[5] = Generators.mapping['cert']
         cert_cmd = " ".join(cert_cmd) + Filters.greps['cert']
         cert_data = subprocess.Popen(cert_cmd, shell=True,
-            stdout=subprocess.PIPE).stdout.read()
+                                     stdout=subprocess.PIPE).stdout.read()
         cert_data = cert_data.decode("utf-8").split('\n')
         cert_data = [re.search('id-at-commonName=(.*)', x) for x in cert_data]
         cert_data = set([x.group(1).split(',')[0] for x in cert_data if x])
@@ -66,7 +66,7 @@ class Shark(object):
         sni_cmd[5] = Generators.mapping['sni']
         sni_cmd = " ".join(sni_cmd) + Filters.greps['sni']
         sni_data = subprocess.Popen(sni_cmd, shell=True,
-            stdout=subprocess.PIPE).stdout.read()
+                                    stdout=subprocess.PIPE).stdout.read()
         sni_data = sni_data.decode("utf-8").split('\n')
         sni_data = set([x.split(' ')[-1] for x in sni_data if x])
         sni_data = [x for x in sni_data if not ' ' in x]
@@ -88,7 +88,7 @@ class Shark(object):
         http_cmd[5] = Generators.mapping['http']
         http_cmd = " ".join(http_cmd) + Filters.greps['http']
         http_data = subprocess.Popen(http_cmd, shell=True,
-            stdout=subprocess.PIPE).stdout.read()
+                                     stdout=subprocess.PIPE).stdout.read()
         http_data = http_data.decode("utf-8").split('\n')
         http_data = [x.split(' ')[-2:] for x in http_data if x]
         http_data = sorted(set([x for x in zip([x[0] for x in http_data], [x[1].replace('\\r\\n', "") for x in http_data])])) # why doesn't strip/rstrip work?
